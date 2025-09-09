@@ -1,7 +1,10 @@
-# Tauri + Vanilla
+## Downloads
 
-This template should help get you started developing with Tauri in vanilla HTML, CSS and Javascript.
+- 🪟 **Windows (.msi)**  
+  [Download](https://github.com/mat2m10/test_tauri/releases/latest/download/app-windows-x64.msi)
 
-## Recommended IDE Setup
+- 🍎 **macOS (.dmg)**  
+  [Download](https://github.com/mat2m10/test_tauri/releases/latest/download/app-macos-x64.dmg)
 
-- [VS Code](https://code.visualstudio.com/) + [Tauri](https://marketplace.visualstudio.com/items?itemName=tauri-apps.tauri-vscode) + [rust-analyzer](https://marketplace.visualstudio.com/items?itemName=rust-lang.rust-analyzer)
+- 🐧 **Linux (.AppImage)**  
+  [Download](https://github.com/mat2m10/test_tauri/releases/latest/download/app-linux-x86_64.AppImage)

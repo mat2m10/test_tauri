@@ -1,0 +1,55 @@
+name: Release
+on:
+  push:
+    tags:
+      - "v*.*.*"
+
+jobs:
+  build:
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: dtolnay/rust-toolchain@stable
+      - uses: swatinem/rust-cache@v2
+
+      # If you have a frontend build step (npm), add it here.
+
+      - name: Build Tauri
+        run: |
+          cd src-tauri
+          cargo tauri build
+
+      # Rename platform artifacts to stable names
+      - name: Rename artifacts
+        shell: bash
+        run: |
+          set -e
+          OUT="src-tauri/target/release/bundle"
+          case "${{ runner.os }}" in
+            Linux)
+              # AppImage
+              find "$OUT/appimage" -name "*.AppImage" -print -exec cp {} app-linux-x86_64.AppImage \;
+              ;;
+            macOS)
+              # DMG
+              find "$OUT/dmg" -name "*.dmg" -print -exec cp {} app-macos-x64.dmg \;
+              ;;
+            Windows)
+              # MSI
+              pwsh -Command "Get-ChildItem -Path '$OUT/msi' -Filter *.msi | ForEach-Object { Copy-Item $_.FullName app-windows-x64.msi }"
+              ;;
+          esac
+
+      # Create (or update) the GitHub Release for this tag and upload the renamed file
+      - name: Upload renamed asset to Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            app-*.*
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
