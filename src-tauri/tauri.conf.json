@@ -41,6 +41,7 @@
       "wix": {
         "language": ["en-US"]
       },
+      "webviewInstallMode": { "type": "downloadBootstrapper" },
       "digestAlgorithm": "sha256"
     },
 

@@ -16,15 +16,11 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+      - uses: swatinem/rust-cache@v2
 
-      - name: Set up Rust
-        uses: dtolnay/rust-toolchain@stable
-
-      - name: Cache cargo
-        uses: swatinem/rust-cache@v2
-
-      # --- OS-specific setup --------------------------------------------------
-      - name: Linux deps (AppImage/GTK/WebKit)
+      # Linux deps (for AppImage/WebKit)
+      - name: Linux deps
         if: runner.os == 'Linux'
         run: |
           sudo apt-get update
@@ -36,20 +32,23 @@ jobs:
             patchelf \
             appstream
 
-      # (macOS/Windows typically need no extra packages to build)
+      # Windows: install WiX Toolset v3 (required for MSI)
+      - name: Install WiX Toolset
+        if: runner.os == 'Windows'
+        run: choco install wixtoolset --no-progress -y
 
-      # --- Install Tauri CLI --------------------------------------------------
+      # Install Tauri CLI
       - name: Install Tauri CLI
         run: cargo install tauri-cli --locked
 
-      # --- Build --------------------------------------------------------------
+      # Build
       - name: Build Tauri
         run: |
           cd src-tauri
           cargo tauri build
 
-      # --- Normalize filenames to stable names for README links --------------
-      - name: Rename artifacts to stable names
+      # Rename to stable filenames used in your README
+      - name: Rename artifacts
         shell: bash
         run: |
           set -e
@@ -66,8 +65,8 @@ jobs:
               ;;
           esac
 
-      # --- Upload to the GitHub Release for this tag -------------------------
-      - name: Upload assets to Release
+      # Upload to the tag's Release
+      - name: Upload assets
         uses: softprops/action-gh-release@v2
         with:
           files: |
